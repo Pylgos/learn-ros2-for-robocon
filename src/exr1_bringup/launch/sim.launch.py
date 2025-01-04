@@ -8,7 +8,7 @@ from launch.actions import (
     IncludeLaunchDescription,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, NotSubstitution
 from launch_ros.actions import Node
 
 
@@ -20,7 +20,7 @@ def generate_launch_description():
     urdf_dir = os.path.join(bringup_dir, "urdf")
 
     args = [
-        DeclareLaunchArgument("use_sim_time", default_value="true"),
+        DeclareLaunchArgument("use_sim_time", default_value="false"),
         DeclareLaunchArgument(
             "world",
             default_value=os.path.join(world_dir, "world.sdf"),
@@ -89,7 +89,24 @@ def generate_launch_description():
         executable="create",
         output="screen",
         arguments=["-name", "field", "-topic", "field_description"],
-        on_exit=gz_spawn_robot,
     )
 
-    return LaunchDescription(args + [common, gz_sim, gz_spawn_field])
+    lidar_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="lidar_bridge",
+        parameters=[
+            {
+                "use_sim_time": use_sim_time,
+                "override_timestamps_with_wall_time": NotSubstitution(use_sim_time),
+            }
+        ],
+        arguments=[
+            "/scan_left@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
+            "/scan_right@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
+        ],
+    )
+
+    return LaunchDescription(
+        args + [common, gz_sim, lidar_bridge, gz_spawn_field, gz_spawn_robot]
+    )

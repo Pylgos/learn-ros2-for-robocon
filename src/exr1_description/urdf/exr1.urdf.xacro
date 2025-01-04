@@ -6,6 +6,7 @@
 
   <xacro:include filename="$(find exr1_description)/urdf/utils.xacro" />
   <xacro:include filename="$(find exr1_description)/urdf/wheel.urdf.xacro" />
+  <xacro:include filename="$(find exr1_description)/urdf/ld06_lidar.urdf.xacro" />
 
   <link name="base_footprint" />
 
@@ -56,6 +57,14 @@
     <origin xyz="${wheel_separation} ${-wheel_separation} ${wheel_radius}"
       rpy="${-pi/2} 0 ${7*pi/4+pi/2}" />
   </xacro:wheel>
+
+  <xacro:ld06_lidar name="left_lidar" topic="scan_left">
+    <origin xyz="0 0.4 0.1" rpy="0 0 0" />
+  </xacro:ld06_lidar>
+
+  <xacro:ld06_lidar name="right_lidar" topic="scan_right">
+    <origin xyz="0 -0.4 0.1" rpy="0 0 ${pi}" />
+  </xacro:ld06_lidar>
 
   <gazebo>
     <plugin filename="libexr1_sim_plugin.so" name="exr1_gz::Exr1System">

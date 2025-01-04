@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org/schema">
-
   <xacro:macro name="wheel" params="name radius parent_link:=base_link *origin">
     <xacro:property name="mass" value="0.5" />
     <xacro:property name="width" value="0.06" />
