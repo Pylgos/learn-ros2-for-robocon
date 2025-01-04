@@ -1,4 +1,4 @@
-#include "exr1_controller.hpp"
+#include "exr1_sim_node.hpp"
 #include <array>
 #include <cstdlib>
 #include <geometry_msgs/msg/twist.hpp>
@@ -45,7 +45,7 @@ class Exr1System : public gz::sim::System,
   /// Whether the system has been properly configured
   bool configured_{false};
 
-  std::shared_ptr<Exr1Controller> controller_;
+  std::shared_ptr<Exr1SimNode> exr1_node_;
 
   template <typename T>
   bool get_element(const std::shared_ptr<const sdf::Element> &sdf,
@@ -180,7 +180,7 @@ public:
     if (params_file) {
       node_options.arguments({"--ros-args", "--params-file", params_file});
     }
-    controller_ = std::make_shared<Exr1Controller>(node_options);
+    exr1_node_ = std::make_shared<Exr1SimNode>(node_options);
 
     configured_ = true;
   }
@@ -191,9 +191,9 @@ public:
       return;
     }
 
-    rclcpp::spin_some(controller_);
+    rclcpp::spin_some(exr1_node_);
 
-    auto target_wheel_torques = controller_->get_wheel_torques();
+    auto target_wheel_torques = exr1_node_->get_wheel_torques();
 
     // {
     //   std::cout << "wheel torques: ";
@@ -226,7 +226,7 @@ public:
     //       << "  local angular : " << local_angular_velocity << std::endl;
     auto wheel_angular_velocities = compute_wheel_angular_velocities(
         local_velocity, local_angular_velocity);
-    controller_->update(wheel_angular_velocities);
+    exr1_node_->update(wheel_angular_velocities);
   }
 };
 

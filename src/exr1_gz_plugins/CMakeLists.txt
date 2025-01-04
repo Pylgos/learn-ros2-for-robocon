@@ -17,6 +17,7 @@ find_package(gz-sim REQUIRED)
 
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
@@ -34,6 +35,7 @@ target_link_libraries(exr1_sim_plugin
 ament_target_dependencies(exr1_sim_plugin
   rclcpp
   geometry_msgs
+  nav_msgs
   tf2
   tf2_ros
   Eigen3

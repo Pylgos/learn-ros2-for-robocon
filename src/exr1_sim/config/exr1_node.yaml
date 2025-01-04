@@ -1,4 +1,4 @@
-/exr1_controller:
+/exr1_node:
   ros__parameters:
     wheel_separation: 0.6
     wheel_radius: 0.1
