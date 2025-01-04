@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org/schema">
 
-  <xacro:macro name="wheel" params="name parent_link:=base_link *origin">
+  <xacro:macro name="wheel" params="name radius parent_link:=base_link *origin">
     <xacro:property name="mass" value="0.5" />
-    <xacro:property name="radius" value="0.2" />
     <xacro:property name="width" value="0.06" />
 
     <xacro:property name="wheel_link_name" value="${name}_wheel" />
@@ -13,7 +12,6 @@
       <parent link="${parent_link}" />
       <child link="${wheel_link_name}" />
       <xacro:insert_block name="origin" />
-      <!-- <axis xyz="0 0 1" /> -->
     </joint>
 
     <link name="${wheel_link_name}">
