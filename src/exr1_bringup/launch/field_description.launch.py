@@ -19,25 +19,22 @@ ARGUMENTS = [
 
 
 def generate_launch_description():
-    exr1_description_dir = get_package_share_directory("exr1_description")
-    xacro_file = os.path.join(exr1_description_dir, "urdf", "exr1.urdf.xacro")
-    namespace = LaunchConfiguration("namespace")
+    bringup_dir = get_package_share_directory("exr1_bringup")
+    xacro_file = os.path.join(bringup_dir, "urdf", "field.urdf.xacro")
     use_sim_time = LaunchConfiguration("use_sim_time")
 
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        name="exr1_state_publisher",
+        name="field_state_publisher",
         output="screen",
         parameters=[
             {"use_sim_time": use_sim_time},
-            {
-                "robot_description": Command(
-                    ["xacro", " ", xacro_file, " ", "namespace:=", namespace]
-                )
-            },
+            {"robot_description": Command(["xacro", " ", xacro_file])},
         ],
-        remappings=[("/tf", "tf"), ("/tf_static", "tf_static")],
+        remappings={
+            "robot_description": "field_description",
+        }.items(),
     )
 
     ld = LaunchDescription(ARGUMENTS)

@@ -1,4 +1,5 @@
 import os
+import math
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
@@ -16,6 +17,7 @@ def generate_launch_description():
     config_dir = os.path.join(bringup_dir, "config")
     launch_dir = os.path.join(bringup_dir, "launch")
     world_dir = os.path.join(bringup_dir, "world")
+    urdf_dir = os.path.join(bringup_dir, "urdf")
 
     args = [
         DeclareLaunchArgument("use_sim_time", default_value="true"),
@@ -57,7 +59,7 @@ def generate_launch_description():
         additional_env={"EXR1_PARAMS_FILE": params_file},
     )
 
-    gz_spawn = Node(
+    gz_spawn_robot = Node(
         package="ros_gz_sim",
         executable="create",
         output="screen",
@@ -67,19 +69,27 @@ def generate_launch_description():
             "-topic",
             "robot_description",
             "-x",
-            "0",
+            "3.5",
             "-y",
-            "0",
+            "0.5",
             "-z",
-            "0",
+            "0.0",
             "-R",
             "0",
             "-P",
             "0",
             "-Y",
-            "0",
+            f"{math.pi/2}",
         ],
         parameters=[{"use_sim_time": use_sim_time}],
     )
 
-    return LaunchDescription(args + [common, gz_sim, gz_spawn])
+    gz_spawn_field = Node(
+        package="ros_gz_sim",
+        executable="create",
+        output="screen",
+        arguments=["-name", "field", "-topic", "field_description"],
+        on_exit=gz_spawn_robot,
+    )
+
+    return LaunchDescription(args + [common, gz_sim, gz_spawn_field])

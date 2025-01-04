@@ -43,4 +43,13 @@ def generate_launch_description():
         }.items(),
     )
 
-    return LaunchDescription(args + [rviz, robot_description])
+    field_description = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(bringup_dir, "launch", "field_description.launch.py")
+        ),
+        launch_arguments={
+            "use_sim_time": use_sim_time,
+        }.items(),
+    )
+
+    return LaunchDescription(args + [rviz, robot_description, field_description])

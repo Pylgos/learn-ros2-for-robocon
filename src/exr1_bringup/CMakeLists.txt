@@ -5,7 +5,7 @@ project(exr1_bringup)
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY config launch world
+  DIRECTORY config launch urdf world
   DESTINATION share/${PROJECT_NAME}
 )
 
