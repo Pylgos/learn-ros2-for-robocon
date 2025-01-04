@@ -30,6 +30,19 @@ std::array<Dst, N> convert_array(const std::array<Src, N> &src) {
   return dst;
 }
 
+// getenvはスレッドセーフではないため，Exr1System::Configureの中で呼び出すと時々クラッシュします．
+// それを回避するために，プラグインのロード時に環境変数を取得しておくことにします．
+struct ParamsFileEnvGetter {
+  std::optional<std::string> params_file;
+  ParamsFileEnvGetter() {
+    auto file = std::getenv("EXR1_PARAMS_FILE");
+    if (file) {
+      params_file = file;
+    }
+  }
+};
+static ParamsFileEnvGetter params_file_env_getter;
+
 namespace exr1_gz {
 
 class Exr1System : public gz::sim::System,
@@ -176,9 +189,10 @@ public:
     }
 
     rclcpp::NodeOptions node_options;
-    auto params_file = std::getenv("EXR1_PARAMS_FILE");
+    auto params_file = params_file_env_getter.params_file;
     if (params_file) {
-      node_options.arguments({"--ros-args", "--params-file", params_file});
+      node_options.arguments(
+          {"--ros-args", "--params-file", params_file.value()});
     }
     exr1_node_ = std::make_shared<Exr1SimNode>(node_options);
 
