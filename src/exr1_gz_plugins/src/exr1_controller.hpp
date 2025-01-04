@@ -70,16 +70,6 @@ public:
         omni_drive_controller_->compute_current_velocity(
             current_wheel_angular_velocities);
 
-    std::cout << "current linear velocity: " << current_linear_velocity
-              << "  current angular velocity: " << current_angular_velocity
-              << std::endl;
-
-    std::cout << "wheel angular velocities: " << std::endl;
-    for (int i = 0; i < 4; i++) {
-      std::cout << current_wheel_angular_velocities[i] << "   ";
-    }
-    std::cout << std::endl;
-
     wheel_torques_ = omni_drive_controller_->compute_torque(
         current_linear_velocity, current_angular_velocity, dt);
     float max_torque = get_parameter("max_torque").as_double();

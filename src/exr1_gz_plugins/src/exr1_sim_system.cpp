@@ -195,6 +195,14 @@ public:
 
     auto target_wheel_torques = controller_->get_wheel_torques();
 
+    // {
+    //   std::cout << "wheel torques: ";
+    //   for (size_t i = 0; i < 4; i++) {
+    //     std::cout << target_wheel_torques[i] << " ";
+    //   }
+    //   std::cout << std::endl;
+    // }
+
     auto [local_velocity, local_angular_velocity] = get_local_wrench(ecm);
     // gzmsg << "local velocity: " << local_velocity
     //       << "  local angular : " << local_angular_velocity << std::endl;
@@ -214,8 +222,8 @@ public:
       return;
     }
     auto [local_velocity, local_angular_velocity] = get_local_wrench(ecm);
-    gzmsg << "local velocity: " << local_velocity
-          << "  local angular : " << local_angular_velocity << std::endl;
+    // gzmsg << "local velocity: " << local_velocity
+    //       << "  local angular : " << local_angular_velocity << std::endl;
     auto wheel_angular_velocities = compute_wheel_angular_velocities(
         local_velocity, local_angular_velocity);
     controller_->update(wheel_angular_velocities);
