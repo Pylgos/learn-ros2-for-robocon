@@ -66,8 +66,8 @@
       <max_wheel_torque>10.0</max_wheel_torque>
       <wheel_radius>${wheel_radius}</wheel_radius>
       <wheel_separation>${wheel_separation}</wheel_separation>
-      <linear_damping>100</linear_damping>
-      <angular_damping>100</angular_damping>
+      <linear_damping>50</linear_damping>
+      <angular_damping>5</angular_damping>
       <base_link>base_link</base_link>
       <!-- <mass>30</mass> -->
       <!-- <center_of_mass>${-wheel_separation/2.0*(1.0-cos(pi/3))} 0</center_of_mass> -->
