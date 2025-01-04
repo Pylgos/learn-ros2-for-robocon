@@ -1,21 +1,16 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>exr1_sim</name>
+  <name>exr1_bringup</name>
   <version>0.1.0</version>
-  <description>Exr1 Simulation</description>
+  <description>Exr1 Description</description>
   <maintainer email="todo@example.com">TODO</maintainer>
   <license>Apache 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>exr1_sim</depend>
   <depend>exr1_description</depend>
-  <depend>ros_gz_bridge</depend>
-  <depend>ros_gz_image</depend>
-  <depend>ros_gz_interfaces</depend>
-  <depend>ros_gz_sim</depend>
-  <depend>robot_state_publisher</depend>
-  <depend>xacro</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

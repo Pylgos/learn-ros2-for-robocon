@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.8)
-project(exr1_sim)
+cmake_minimum_required(VERSION 3.5)
+project(exr1_bringup)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY config launch worlds
+  DIRECTORY config launch world
   DESTINATION share/${PROJECT_NAME}
 )
 
