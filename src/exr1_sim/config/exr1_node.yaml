@@ -1,0 +1,15 @@
+/exr1_controller:
+  ros__parameters:
+    wheel_separation: 0.6
+    wheel_radius: 0.1
+    mass: 30.0
+    moment_of_inertia: 2.29
+    linear_pid:
+      kp: 1000.0
+      ki: 0.0
+      kd: 0.0
+    angular_pid:
+      kp: 1000.0
+      ki: 0.0
+      kd: 0.0
+    max_torque: 10.0
