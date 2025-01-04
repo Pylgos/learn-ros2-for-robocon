@@ -52,4 +52,22 @@ def generate_launch_description():
         }.items(),
     )
 
-    return LaunchDescription(args + [rviz, robot_description, field_description])
+    laserscan_merger = Node(
+        package="laserscan_merger",
+        executable="laserscan_merger_node",
+        parameters=[
+            {
+                "use_sim_time": use_sim_time,
+                "publish_frequency": 10.0,
+                "out_points": 1000,
+                "scan_input_topics": ["scan_left", "scan_right"],
+                "scan_timeout": 0.5,
+                "out_range_min": 0.5,
+            }
+        ],
+        remappings=[("scan_out", "scan")],
+    )
+
+    return LaunchDescription(
+        args + [rviz, robot_description, field_description, laserscan_merger]
+    )

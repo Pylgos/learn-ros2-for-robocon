@@ -21,6 +21,7 @@
           name = "learn-ros2-for-robocon-ws";
           buildInputs = [
             rosPackages.desktop
+            rosPackages.pcl-ros
             rosPackages.ros-gz
             pkgs.rosPythonPackages.sympy
           ];

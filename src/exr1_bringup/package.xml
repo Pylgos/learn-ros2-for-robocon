@@ -11,6 +11,7 @@
 
   <depend>exr1_sim</depend>
   <depend>exr1_description</depend>
+  <depend>laserscan_merger</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
