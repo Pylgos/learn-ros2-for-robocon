@@ -1,3 +1,4 @@
+from math import pi
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -52,22 +53,32 @@ def generate_launch_description():
         }.items(),
     )
 
-    laserscan_merger = Node(
-        package="laserscan_merger",
-        executable="laserscan_merger_node",
+    ransac_localization = Node(
+        package="ransac_localization",
+        executable="ransac_localization",
         parameters=[
             {
                 "use_sim_time": use_sim_time,
-                "publish_frequency": 10.0,
-                "out_points": 1000,
-                "scan_input_topics": ["scan_left", "scan_right"],
-                "scan_timeout": 0.5,
-                "out_range_min": 0.5,
+                "robot_frame": "base_link",
+                "odom_frame": "odom",
+                "merge_window": 0.1,
+                "scan_topics": ["scan_left", "scan_right"],
+                "min_range": 0.6,
+                "line_detection.min_score_ratio": 0.05,
+                "line_detection.inlier_threshold": 0.075,
+                "line_detection.ransac_iterations": 10000,
+                "initial_pose.x": 3.0,
+                "initial_pose.y": 1.0,
+                "initial_pose.yaw": pi / 2,
+                "corner_pose.x": 4.0,
+                "corner_pose.y": 0.0,
+                "corner_pose.yaw": 3 * pi / 4,
+                "position_lpf": 0.2,
+                "rotation_lpf": 1.0,
             }
         ],
-        remappings=[("scan_out", "scan")],
     )
 
     return LaunchDescription(
-        args + [rviz, robot_description, field_description, laserscan_merger]
+        args + [rviz, robot_description, field_description, ransac_localization]
     )

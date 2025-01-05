@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="field" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:property name="field_width" value="8.0" />
-  <xacro:property name="field_height" value="3.0" />
+  <xacro:property name="field_height" value="8.0" />
   <xacro:property name="fence_height" value="0.15" />
   <xacro:property name="fence_width" value="0.15" />
 
