@@ -1,7 +1,8 @@
-/exr1_node:
+exr1_node:
   ros__parameters:
     wheel_separation: 0.35
-    wheel_radius: 0.05
+    # wheel_radius: 0.05
+    wheel_radius: 0.049 # Simulate wheel slip
     mass: 30.0
     moment_of_inertia: 2.29
     linear_pid:
