@@ -13,4 +13,4 @@ exr1_node:
       kp: 100.0
       ki: 0.0
       kd: 0.0
-    max_torque: 10.0
+    max_torque: 2.5
