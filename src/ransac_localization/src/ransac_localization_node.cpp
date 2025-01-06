@@ -56,9 +56,9 @@ RansacLocalizationNode::RansacLocalizationNode(
       std::bind(&RansacLocalizationNode::scan_callback, this,
                 std::placeholders::_1));
 
-  tf_buf_.reset(new tf2_ros::Buffer(get_clock()));
-  tf_listener_.reset(new tf2_ros::TransformListener(*tf_buf_));
-  tf_broadcaster_.reset(new tf2_ros::TransformBroadcaster(*this));
+  tf_buf_ = std::make_shared<tf2_ros::Buffer>(get_clock());
+  tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buf_);
+  tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(*this);
 
   cloud_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(
       "point_cloud", rclcpp::SystemDefaultsQoS{});

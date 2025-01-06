@@ -221,39 +221,72 @@ CornerLocalization::process(const pcl::PointCloud<pcl::PointXYZ> &cloud,
     initial_robot_to_map_ = std::nullopt;
   }
 
-  if (tracked_ && last_tracked_corner_.has_value() && map_corner_.has_value()) {
-    auto tracked_corner = last_tracked_corner_.value();
-    auto map_corner = map_corner_.value();
-    float tracked_corner_angle =
-        std::atan2(tracked_corner.direction.y(), tracked_corner.direction.x());
-    float map_corner_angle =
-        std::atan2(map_corner.direction.y(), map_corner.direction.x());
-    tf2::Quaternion odom_to_map_rotation{
-        tf2::Vector3{0, 0, 1}, map_corner_angle - tracked_corner_angle};
-    tf2::Vector3 map_corner_position = {map_corner.position.x(),
-                                        map_corner.position.y(), 0};
-    tf2::Vector3 tracked_corner_position = {tracked_corner.position.x(),
-                                            tracked_corner.position.y(), 0};
-    tf2::Vector3 odom_to_map_translation =
-        map_corner_position -
-        (tf2::Matrix3x3{odom_to_map_rotation} * tracked_corner_position);
+  if (!prev_robot_to_odom_.has_value()) {
+    prev_robot_to_odom_ = robot_pose;
+  }
 
-    if (smoothed_position_.has_value()) {
-      smoothed_position_ =
-          (1 - options_.position_lpf) * smoothed_position_.value() +
-          options_.position_lpf * odom_to_map_translation;
+  if (tracked_ && last_tracked_corner_.has_value() && map_corner_.has_value()) {
+    const auto tracked_corner = last_tracked_corner_.value();
+    const auto map_corner = map_corner_.value();
+
+    const float tracked_corner_angle =
+        std::atan2(tracked_corner.direction.y(), tracked_corner.direction.x());
+    const tf2::Vector3 tracked_corner_position = {
+        tracked_corner.position.x(), tracked_corner.position.y(), 0};
+    const float map_corner_angle =
+        std::atan2(map_corner.direction.y(), map_corner.direction.x());
+    const tf2::Vector3 map_corner_position = {map_corner.position.x(),
+                                              map_corner.position.y(), 0};
+    const tf2::Transform corner_to_odom_transform{
+        tf2::Quaternion{tf2::Vector3{0, 0, 1}, tracked_corner_angle},
+        tracked_corner_position};
+    const tf2::Transform corner_to_map_transform{
+        tf2::Quaternion{tf2::Vector3{0, 0, 1}, map_corner_angle},
+        map_corner_position};
+    const auto robot_to_odom_transform = robot_pose;
+
+    const auto odom_to_corner_transform = corner_to_odom_transform.inverse();
+    const auto odom_to_map_transform =
+        corner_to_map_transform * odom_to_corner_transform;
+    const auto robot_to_map_transform =
+        odom_to_map_transform * robot_to_odom_transform;
+
+    if (smoothed_robot_to_map_.has_value()) {
+      auto smoothed_rotation = smoothed_robot_to_map_->getRotation();
+      auto smoothed_position = smoothed_robot_to_map_->getOrigin();
+
+      // base_link -> odom間にはLPFを適用しない
+      const auto prev_position =
+          odom_to_map_transform * prev_robot_to_odom_->getOrigin();
+      const auto current_position =
+          odom_to_map_transform * robot_to_odom_transform.getOrigin();
+      const auto delta_position = current_position - prev_position;
+      smoothed_position += delta_position;
+      const auto current_rotation = odom_to_map_transform.getRotation() *
+                                    robot_to_odom_transform.getRotation();
+      const auto prev_rotation = odom_to_map_transform.getRotation() *
+                                 prev_robot_to_odom_->getRotation();
+      const auto delta_rotation = prev_rotation.inverse() * current_rotation;
+      smoothed_rotation *= delta_rotation;
+
+      smoothed_position =
+          (1 - options_.position_lpf) * smoothed_position +
+          options_.position_lpf * robot_to_map_transform.getOrigin();
+      smoothed_rotation = smoothed_rotation.slerp(
+          robot_to_map_transform.getRotation(), options_.rotation_lpf);
+
+      smoothed_robot_to_map_ =
+          tf2::Transform{smoothed_rotation, smoothed_position};
     } else {
-      smoothed_position_ = odom_to_map_translation;
+      smoothed_robot_to_map_ = robot_to_map_transform;
     }
-    if (smoothed_rotation_.has_value()) {
-      smoothed_rotation_ = smoothed_rotation_.value().slerp(
-          odom_to_map_rotation, options_.rotation_lpf);
-    } else {
-      smoothed_rotation_ = odom_to_map_rotation;
-    }
-    tf2::Transform odom_to_map{smoothed_rotation_.value(),
-                               smoothed_position_.value()};
-    return odom_to_map;
+
+    const auto odom_to_robot_transform = robot_pose.inverse();
+    const auto smoothed_odom_to_map_transform =
+        smoothed_robot_to_map_.value() * odom_to_robot_transform;
+
+    prev_robot_to_odom_ = robot_pose;
+    return smoothed_odom_to_map_transform;
   }
   return std::nullopt;
 }

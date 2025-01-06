@@ -73,8 +73,8 @@ class CornerLocalization {
   std::optional<tf2::Transform> initial_robot_to_map_;
   std::optional<Corner> last_tracked_corner_;
   bool tracked_;
-  std::optional<tf2::Vector3> smoothed_position_;
-  std::optional<tf2::Quaternion> smoothed_rotation_;
+  std::optional<tf2::Transform> prev_robot_to_odom_;
+  std::optional<tf2::Transform> smoothed_robot_to_map_;
   std::optional<rclcpp::Time> tracked_corner_stamp_;
   std::optional<tf2::Transform> odom_to_map_;
   std::vector<Line> detected_lines_;
