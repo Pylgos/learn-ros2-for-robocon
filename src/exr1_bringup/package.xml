@@ -9,6 +9,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>ros_gz_bridge</depend>
   <depend>exr1_gz_plugins</depend>
   <depend>exr1_description</depend>
   <depend>ransac_localization</depend>
