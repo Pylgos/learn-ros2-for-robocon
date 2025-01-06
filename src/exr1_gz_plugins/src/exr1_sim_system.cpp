@@ -30,18 +30,24 @@ std::array<Dst, N> convert_array(const std::array<Src, N> &src) {
   return dst;
 }
 
-// getenvはスレッドセーフではないため，Exr1System::Configureの中で呼び出すと時々クラッシュします．
-// それを回避するために，プラグインのロード時に環境変数を取得しておくことにします．
-struct ParamsFileEnvGetter {
-  std::optional<std::string> params_file;
-  ParamsFileEnvGetter() {
-    auto file = std::getenv("EXR1_PARAMS_FILE");
-    if (file) {
-      params_file = file;
+static std::optional<std::string> very_safe_get_env(const char *var_name) {
+  std::ifstream env_file("/proc/self/environ");
+  if (env_file.is_open()) {
+    std::string line;
+    while (std::getline(env_file, line,
+                        '\0')) { // 環境変数はNULL文字で区切られている
+      size_t pos = line.find('=');
+      if (pos != std::string::npos) {
+        std::string name = line.substr(0, pos);
+        std::string value = line.substr(pos + 1);
+        if (name == var_name) {
+          return value;
+        }
+      }
     }
   }
-};
-static ParamsFileEnvGetter params_file_env_getter;
+  return std::nullopt;
+}
 
 namespace exr1_gz {
 
@@ -189,8 +195,8 @@ public:
     }
 
     rclcpp::NodeOptions node_options;
-    auto params_file = params_file_env_getter.params_file;
-    if (params_file) {
+    auto params_file = very_safe_get_env("EXR1_PARAMS_FILE");
+    if (params_file.has_value()) {
       node_options.arguments(
           {"--ros-args", "--params-file", params_file.value()});
     }
