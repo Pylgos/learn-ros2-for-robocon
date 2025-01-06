@@ -9,9 +9,10 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>exr1_sim</depend>
+  <depend>exr1_gz_plugins</depend>
   <depend>exr1_description</depend>
-  <depend>laserscan_merger</depend>
+  <depend>ransac_localization</depend>
+  <depend>simple_pose_controller</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

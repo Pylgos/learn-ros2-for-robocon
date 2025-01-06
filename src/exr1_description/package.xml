@@ -10,7 +10,6 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>exr1_gz_plugins</depend>
-  <depend>joint_state_publisher</depend>
   <depend>robot_state_publisher</depend>
   <depend>urdf</depend>
   <depend>xacro</depend>
