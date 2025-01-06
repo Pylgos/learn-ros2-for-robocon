@@ -68,7 +68,7 @@
 
   <gazebo>
     <plugin filename="libexr1_sim_plugin.so" name="exr1_gz::Exr1System">
-      <max_wheel_torque>10.0</max_wheel_torque>
+      <max_wheel_torque>5.0</max_wheel_torque>
       <wheel_radius>${wheel_radius}</wheel_radius>
       <wheel_separation>${wheel_separation}</wheel_separation>
       <linear_damping>50</linear_damping>
