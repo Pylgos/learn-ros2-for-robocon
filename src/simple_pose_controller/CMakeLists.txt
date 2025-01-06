@@ -16,7 +16,7 @@ add_library(simple_pose_controller_node SHARED
   src/simple_pose_controller_node.cpp
 )
 
-ament_target_dependencies(ransac_localization_node
+ament_target_dependencies(simple_pose_controller_node
   rclcpp
   rclcpp_components
   sensor_msgs
@@ -30,7 +30,7 @@ if(NOT WIN32)
     "${ament_cmake_package_templates_ENVIRONMENT_HOOK_LIBRARY_PATH}")
 endif()
 
-rclcpp_components_register_nodes(simple_pose_controller "simple_pose_controller::SimplePoseControllerNode")
+rclcpp_components_register_nodes(simple_pose_controller_node "simple_pose_controller::SimplePoseControllerNode")
 
 add_executable(simple_pose_controller
   src/standalone.cpp
