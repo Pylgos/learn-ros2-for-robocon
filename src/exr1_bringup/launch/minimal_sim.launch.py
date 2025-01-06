@@ -15,9 +15,8 @@ from launch_ros.actions import Node
 def generate_launch_description():
     bringup_dir = get_package_share_directory("exr1_bringup")
     config_dir = os.path.join(bringup_dir, "config")
-    launch_dir = os.path.join(bringup_dir, "launch")
     world_dir = os.path.join(bringup_dir, "world")
-    urdf_dir = os.path.join(bringup_dir, "urdf")
+    desc_dir = get_package_share_directory("exr1_description")
 
     args = [
         DeclareLaunchArgument("use_sim_time", default_value="false"),
@@ -40,11 +39,6 @@ def generate_launch_description():
     world = LaunchConfiguration("world")
     robot_name = LaunchConfiguration("robot_name")
     params_file = LaunchConfiguration("params_file")
-
-    common = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(launch_dir, "common.launch.py")),
-        launch_arguments={"use_sim_time": use_sim_time}.items(),
-    )
 
     gz_sim = ExecuteProcess(
         cmd=[
@@ -107,6 +101,32 @@ def generate_launch_description():
         ],
     )
 
+    robot_description = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(desc_dir, "launch", "robot_description.launch.py")
+        ),
+        launch_arguments={
+            "use_sim_time": use_sim_time,
+        }.items(),
+    )
+
+    field_description = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(bringup_dir, "launch", "field_description.launch.py")
+        ),
+        launch_arguments={
+            "use_sim_time": use_sim_time,
+        }.items(),
+    )
+
     return LaunchDescription(
-        args + [common, gz_sim, lidar_bridge, gz_spawn_field, gz_spawn_robot]
+        args
+        + [
+            gz_sim,
+            lidar_bridge,
+            gz_spawn_field,
+            gz_spawn_robot,
+            robot_description,
+            field_description,
+        ]
     )
