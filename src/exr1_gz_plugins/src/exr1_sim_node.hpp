@@ -17,7 +17,8 @@ class Exr1SimNode : public Exr1Node {
 
 public:
   Exr1SimNode(rclcpp::NodeOptions node_options = rclcpp::NodeOptions())
-      : Exr1Node(node_options) {
+      : Exr1Node(node_options), wheel_torques_{0, 0, 0, 0}, position_{0, 0},
+        orientation_{0} {
     omni_drive_controller_ = QuadOmniDriveController(
         PidGain{
             .kp = (float)get_parameter("linear_pid.kp").as_double(),
