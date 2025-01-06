@@ -74,11 +74,34 @@ def generate_launch_description():
                 "corner_pose.y": 0.0,
                 "corner_pose.yaw": 3 * pi / 4,
                 "position_lpf": 0.2,
-                "rotation_lpf": 1.0,
+                "rotation_lpf": 0.2,
+            }
+        ],
+    )
+
+    simple_pose_controller = Node(
+        package="simple_pose_controller",
+        executable="simple_pose_controller",
+        parameters=[
+            {
+                "use_sim_time": use_sim_time,
+                "robot_frame": "base_link",
+                "odom_frame": "odom",
+                "max_linear_speed": 2.0,
+                "max_angular_speed": 3.0,
+                "max_linear_deceleration": 1.0,
+                "max_angular_deceleration": 1.0,
             }
         ],
     )
 
     return LaunchDescription(
-        args + [rviz, robot_description, field_description, ransac_localization]
+        args
+        + [
+            rviz,
+            robot_description,
+            field_description,
+            ransac_localization,
+            simple_pose_controller,
+        ]
     )
