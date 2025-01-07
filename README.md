@@ -1,1 +1,2 @@
-# learn-ros2-for-robocon
+# ROS 2 Hands-on For Roboconists
+
