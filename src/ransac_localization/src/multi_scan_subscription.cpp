@@ -75,10 +75,19 @@ void MultiScanSubscription::process_scans() {
   }
   auto latest_stamp = maybe_latest_stamp.value();
 
-  auto robot_tf_stamped = tf_buf_.lookupTransform(
-      odom_frame_, robot_frame_, latest_stamp, transform_timeout_);
   tf2::Vector3 robot_position;
-  tf2::fromMsg(robot_tf_stamped.transform.translation, robot_position);
+  try {
+    auto robot_tf_stamped = tf_buf_.lookupTransform(
+        odom_frame_, robot_frame_, latest_stamp, transform_timeout_);
+    tf2::fromMsg(robot_tf_stamped.transform.translation, robot_position);
+  } catch (tf2::TransformException &e) {
+    RCLCPP_ERROR(node_->get_logger(), "Failed to lookup transform: %s",
+                 e.what());
+    state_ = State::WAIT;
+    scans_.clear();
+    deadline_timer_.reset();
+    return;
+  }
 
   auto min_range_sq = min_range_ * min_range_;
 
@@ -90,11 +99,20 @@ void MultiScanSubscription::process_scans() {
   points->reserve(total_points);
 
   for (const auto &[topic, scan] : scans_) {
-    auto tf_stamped = tf_buf_.lookupTransform(
-        odom_frame_, scan->header.stamp, scan->header.frame_id,
-        scan->header.stamp, odom_frame_, transform_timeout_);
     tf2::Transform tf;
-    tf2::fromMsg(tf_stamped.transform, tf);
+    try {
+      auto tf_stamped = tf_buf_.lookupTransform(
+          odom_frame_, scan->header.stamp, scan->header.frame_id,
+          scan->header.stamp, odom_frame_, transform_timeout_);
+      tf2::fromMsg(tf_stamped.transform, tf);
+    } catch (tf2::TransformException &e) {
+      RCLCPP_ERROR(node_->get_logger(), "Failed to lookup transform: %s",
+                   e.what());
+      state_ = State::WAIT;
+      scans_.clear();
+      deadline_timer_.reset();
+      return;
+    }
     for (size_t i = 0; i < scan->ranges.size(); ++i) {
       float range = scan->ranges[i];
       if (range < scan->range_min || scan->range_max < range) {
