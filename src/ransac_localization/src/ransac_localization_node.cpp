@@ -105,11 +105,16 @@ void RansacLocalizationNode::scan_callback(
   cloud_msg.header = scan.header;
   cloud_pub_->publish(cloud_msg);
 
-  const auto tf_stamped = tf_buf_->lookupTransform(
-      get_parameter("odom_frame").as_string(),
-      get_parameter("robot_frame").as_string(), scan.header.stamp);
   tf2::Transform robot_pose;
-  tf2::fromMsg(tf_stamped.transform, robot_pose);
+  try {
+    const auto tf_stamped = tf_buf_->lookupTransform(
+        get_parameter("odom_frame").as_string(),
+        get_parameter("robot_frame").as_string(), scan.header.stamp);
+    tf2::fromMsg(tf_stamped.transform, robot_pose);
+  } catch (tf2::TransformException &e) {
+    RCLCPP_ERROR(get_logger(), "Failed to lookup transform: %s", e.what());
+    return;
+  }
 
   auto maybe_odom_to_map =
       corner_localization_->process(*scan.cloud, robot_pose);
