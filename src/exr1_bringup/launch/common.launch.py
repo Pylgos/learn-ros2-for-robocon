@@ -32,7 +32,6 @@ def generate_launch_description():
         output="screen",
         arguments=["-d", os.path.join(bringup_dir, "config", "config.rviz")],
         parameters=[{"use_sim_time": use_sim_time}],
-        remappings=[("/tf", "tf"), ("/tf_static", "tf_static")],
     )
 
     robot_description = IncludeLaunchDescription(
